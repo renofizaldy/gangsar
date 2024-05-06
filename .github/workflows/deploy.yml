@@ -1,0 +1,26 @@
+name: Deploy
+
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Check Latest Code
+      uses: actions/checkout@v3
+
+    - name: Deploy production
+      if: github.ref == 'refs/heads/main'
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.NH_FTP_HOST }}
+        username: ${{ secrets.NH_FTP_USERNAME }}
+        password: ${{ secrets.NH_FTP_PASSWORD }}
+        port: ${{ secrets.NH_FTP_PORT }}
+        server-dir: gangsar.elangmasmedia.com/
