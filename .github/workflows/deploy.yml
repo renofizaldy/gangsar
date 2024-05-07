@@ -23,5 +23,4 @@ jobs:
         username: ${{ secrets.NH_FTP_USERNAME }}
         password: ${{ secrets.NH_FTP_PASSWORD }}
         port: ${{ secrets.NH_FTP_PORT }}
-        protocol: ftps
         server-dir: gangsar.elangmasmedia.com/
