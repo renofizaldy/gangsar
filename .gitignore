@@ -23,6 +23,7 @@ application/logs/*
 /assetlinks.json
 /application/config/database.php
 /index.php
+/.htaccess
 
 #folder
 /assets/uploads/
