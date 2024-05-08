@@ -12,17 +12,17 @@ user_guide_src/cilexer/dist/*
 user_guide_src/cilexer/pycilexer.egg-info/*
 
 #codeigniter 3
-application/logs/*
-!application/logs/index.html
-!application/logs/.htaccess
+app/logs/*
+!app/logs/index.html
+!app/logs/.htaccess
 /vendor/
 ### CodeIgniter Patch ###
 
 #file 
 /apple-app-site-association
 /assetlinks.json
-/application/config/database.php
-/application/config/config.php
+/app/config/database.php
+/app/config/config.php
 /index.php
 /.htaccess
 
