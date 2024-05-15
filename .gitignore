@@ -25,7 +25,12 @@ app/logs/*
 /app/config/config.php
 /index.php
 /.htaccess
+/composer.lock
 
 #folder
 /assets/uploads/
 /files/
+
+#docker
+/docker-compose.yml
+/Dockerfile

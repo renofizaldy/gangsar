@@ -1106,12 +1106,14 @@ insert  into `sma_logs`(`id`,`detail`,`model`,`date`) values
 DROP TABLE IF EXISTS `sma_migrations`;
 
 CREATE TABLE `sma_migrations` (
-  `version` bigint(20) NOT NULL
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `version` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 /*Data for the table `sma_migrations` */
 
-insert  into `sma_migrations`(`version`) values 
+insert  into `sma_migrations`(`version`) values
 (315);
 
 /*Table structure for table `sma_notifications` */
