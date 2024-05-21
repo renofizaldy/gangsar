@@ -390,11 +390,83 @@ class Purchases_model extends CI_Model
         return false;
     }
 
+    public function getProductNamesX($term, $limit = 5)
+    {
+        $this->db->select('products.*, business_location.name as bl_name');
+
+        $this->db->from('products');
+
+        $this->db->join('business_location', 'business_location.id\' = products.business_location', 'left');
+
+        $this->db->where("
+            products.type = 'standard'
+            AND (
+                products.name LIKE '%" . $term . "%'
+                OR products.code LIKE '%" . $term . "%'
+                OR products.supplier1_part_no LIKE '%" . $term . "%'
+                OR products.supplier2_part_no LIKE '%" . $term . "%'
+                OR products.supplier3_part_no LIKE '%" . $term . "%'
+                OR products.supplier4_part_no LIKE '%" . $term . "%'
+                OR products.supplier5_part_no LIKE '%" . $term . "%'
+                OR concat(products.name, ' (', products.code, ')') LIKE '%" . $term . "%'
+            )
+        ");
+
+        $this->db->limit($limit);
+
+        $q = $this->db->get();
+        return $q->result_array();
+        // if ($q->num_rows() > 0) {
+        //     foreach (($q->result()) as $row) {
+        //         $data[] = $row;
+        //     }
+        //     return $data;
+        // }
+        return false;
+    }
+
+
     public function getProductNames($term, $limit = 5)
     {
-        $this->db->where("type = 'standard' AND (name LIKE '%" . $term . "%' OR code LIKE '%" . $term . "%' OR supplier1_part_no LIKE '%" . $term . "%' OR supplier2_part_no LIKE '%" . $term . "%' OR supplier3_part_no LIKE '%" . $term . "%' OR supplier4_part_no LIKE '%" . $term . "%' OR supplier5_part_no LIKE '%" . $term . "%' OR  concat(name, ' (', code, ')') LIKE '%" . $term . "%')");
-        $this->db->limit($limit);
-        $q = $this->db->get('products');
+        // $this->db->where("
+        //     type = 'standard'
+        //     AND (
+        //         products.name LIKE '%" . $term . "%'
+        //         OR code LIKE '%" . $term . "%'
+        //         OR supplier1_part_no LIKE '%" . $term . "%'
+        //         OR supplier2_part_no LIKE '%" . $term . "%'
+        //         OR supplier3_part_no LIKE '%" . $term . "%'
+        //         OR supplier4_part_no LIKE '%" . $term . "%'
+        //         OR supplier5_part_no LIKE '%" . $term . "%'
+        //         OR concat(name, ' (', code, ')') LIKE '%" . $term . "%'
+        //     )
+        // ");
+        // $this->db->limit($limit);
+        // $q = $this->db->get('products');
+
+        $raw = "SELECT
+                sma_products.*,
+                sma_business_location.name AS bl_name
+            FROM
+                sma_products
+            LEFT JOIN
+                sma_business_location
+                ON sma_business_location.id = sma_products.business_location
+            WHERE
+                sma_products.type = 'standard'
+                AND (
+                    sma_products.name LIKE '%{$term}%'
+                    OR sma_products.code LIKE '%{$term}%'
+                    OR sma_products.supplier1_part_no LIKE '%{$term}%'
+                    OR sma_products.supplier2_part_no LIKE '%{$term}%'
+                    OR sma_products.supplier3_part_no LIKE '%{$term}%'
+                    OR sma_products.supplier4_part_no LIKE '%{$term}%'
+                    OR sma_products.supplier5_part_no LIKE '%{$term}%'
+                    OR concat(sma_products.name, ' (', sma_products.code, ')') LIKE '%{$term}%'
+                )
+            LIMIT {$limit}
+        ";
+        $q = $this->db->query($raw);
         if ($q->num_rows() > 0) {
             foreach (($q->result()) as $row) {
                 $data[] = $row;

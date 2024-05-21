@@ -264,8 +264,7 @@
                 <?php echo form_input('reference_no', ($_POST['reference_no'] ?? $ponumber), 'class="form-control input-tip" id="poref"'); ?>
               </div>
             </div>
-            <?php if ($Owner || $Admin || !$this->session->userdata('warehouse_id')) {
-            ?>
+            <?php if ($Owner || $Admin || !$this->session->userdata('warehouse_id')) { ?>
               <div class="col-md-4">
                 <div class="form-group">
                   <?= lang('warehouse', 'powarehouse'); ?>
@@ -277,8 +276,7 @@
                   echo form_dropdown('warehouse', $wh, ($_POST['warehouse'] ?? $Settings->default_warehouse), 'id="powarehouse" class="form-control input-tip select" data-placeholder="' . lang('select') . ' ' . lang('warehouse') . '" required="required" style="width:100%;" '); ?>
                 </div>
               </div>
-            <?php
-            } else {
+            <?php } else {
               $warehouse_input = [
                 'type'  => 'hidden',
                 'name'  => 'warehouse',
@@ -355,13 +353,11 @@
                       <i class="fa fa-2x fa-barcode addIcon"></i></a>
                     </div>
                     <?php echo form_input('add_item', '', 'class="form-control input-lg" id="add_item" placeholder="' . $this->lang->line('add_product_to_order') . '"'); ?>
-                    <?php if ($Owner || $Admin || $GP['products-add']) {
-                    ?>
+                    <?php if ($Owner || $Admin || $GP['products-add']) { ?>
                       <div class="input-group-addon" style="padding-left: 10px; padding-right: 10px;">
                         <a href="<?= admin_url('products/add') ?>" id="addManually1"><i class="fa fa-2x fa-plus-circle addIcon" id="addIcon"></i></a>
                       </div>
-                    <?php
-                    } ?>
+                    <?php } ?>
                   </div>
                 </div>
                 <div class="clearfix"></div>
@@ -371,25 +367,18 @@
             <div class="col-md-12">
               <div class="control-group table-group">
                 <label class="table-label"><?= lang('order_items'); ?></label>
-
                 <div class="controls table-controls">
                   <table id="poTable" class="table items table-striped table-bordered table-condensed table-hover sortable_table">
                     <thead>
                       <tr>
                         <th class="col-md-4"><?= lang('product') . ' (' . lang('code') . ' - ' . lang('name') . ')'; ?></th>
-                        <?php if ($Settings->product_expiry) {
-                          echo '<th class="col-md-2">' . $this->lang->line('expiry_date') . '</th>';
-                        } ?>
+                        <?= ($Settings->product_expiry) ? '<th class="col-md-2">' . $this->lang->line('expiry_date') . '</th>' : ''; ?>
                         <th class="col-md-1"><?= lang('net_unit_cost'); ?></th>
                         <th class="col-md-1"><?= lang('quantity'); ?></th>
-                        <?php if ($Settings->product_discount) {
-                          echo '<th class="col-md-1">' . $this->lang->line('discount') . '</th>';
-                        } ?>
-                        <?php if ($Settings->tax1) {
-                          echo '<th class="col-md-1">' . $this->lang->line('product_tax') . '</th>';
-                        } ?>
-                        <th><?= lang('subtotal'); ?> (<span class="currency"><?= $default_currency->code ?></span>)
-                        </th>
+                        <?= ($Settings->product_discount) ? '<th class="col-md-1">' . $this->lang->line('discount') . '</th>' : ''; ?>
+                        <?= ($Settings->tax1) ? '<th class="col-md-1">' . $this->lang->line('product_tax') . '</th>' : ''; ?>
+                        <th>Loc.</th>
+                        <th><?= lang('subtotal'); ?> (<span class="currency"><?= $default_currency->code ?></span>)</th>
                         <th style="width: 30px !important; text-align: center;"><i class="fa fa-trash-o" style="opacity:0.5; filter:alpha(opacity=50);"></i></th>
                       </tr>
                     </thead>
@@ -465,11 +454,9 @@
               <td><?= lang('items') ?> <span class="totals_val pull-right" id="titems">0</span></td>
               <td><?= lang('total') ?> <span class="totals_val pull-right" id="total">0.00</span></td>
               <td><?= lang('order_discount') ?> <span class="totals_val pull-right" id="tds">0.00</span></td>
-              <?php if ($Settings->tax2) {
-              ?>
+              <?php if ($Settings->tax2) { ?>
                 <td><?= lang('order_tax') ?> <span class="totals_val pull-right" id="ttax2">0.00</span></td>
-              <?php
-              } ?>
+              <?php } ?>
               <td><?= lang('shipping') ?> <span class="totals_val pull-right" id="tship">0.00</span></td>
               <td><?= lang('grand_total') ?> <span class="totals_val pull-right" id="gtotal">0.00</span></td>
             </tr>

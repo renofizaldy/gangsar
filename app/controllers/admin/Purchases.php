@@ -1829,98 +1829,131 @@ class Purchases extends MY_Controller
         }
     }
 
-    /* --------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------- */
 
-    public function suggestions()
-    {
-        $term        = $this->input->get('term', true);
-        $supplier_id = $this->input->get('supplier_id', true);
+		public function suggestions()
+		{
+			$term        = $this->input->get('term', true);
+			$supplier_id = $this->input->get('supplier_id', true);
 
-        if (strlen($term) < 1 || !$term) {
-            die("<script type='text/javascript'>setTimeout(function(){ window.top.location.href = '" . admin_url('welcome') . "'; }, 10);</script>");
-        }
+			if (strlen($term) < 1 || !$term) {
+				die("<script type='text/javascript'>setTimeout(function(){ window.top.location.href = '" . admin_url('welcome') . "'; }, 10);</script>");
+			}
 
-        $analyzed  = $this->sma->analyze_term($term);
-        $sr        = $analyzed['term'];
-        $option_id = $analyzed['option_id'];
-        $sr        = addslashes($sr);
-        $strict    = $analyzed['strict']                    ?? false;
-        $qty       = $strict ? null : $analyzed['quantity'] ?? null;
-        $bprice    = $strict ? null : $analyzed['price']    ?? null;
+			$analyzed  = $this->sma->analyze_term($term);
+			$sr        = $analyzed['term'];
+			$option_id = $analyzed['option_id'];
+			$sr        = addslashes($sr);
+			$strict    = $analyzed['strict'] ?? false;
+			$qty       = $strict ? null : $analyzed['quantity'] ?? null;
+			$bprice    = $strict ? null : $analyzed['price'] ?? null;
 
-        $rows = $this->purchases_model->getProductNames($sr);
-        if ($rows) {
-            $r = 0;
-            foreach ($rows as $row) {
-                $c                    = uniqid(mt_rand(), true);
-                $option               = false;
-                $row->item_tax_method = $row->tax_method;
-                $options              = $this->purchases_model->getProductOptions($row->id);
-                if ($options) {
-                    $opt = $option_id && $r == 0 ? $this->purchases_model->getProductOptionByID($option_id) : current($options);
-                    if (!$option_id || $r > 0) {
-                        $option_id = $opt->id;
-                    }
-                } else {
-                    $opt       = json_decode('{}');
-                    $opt->cost = 0;
-                    $option_id = false;
-                }
-                $row->option           = $option_id;
-                $row->supplier_part_no = '';
-                if ($row->supplier1 == $supplier_id) {
-                    $row->supplier_part_no = $row->supplier1_part_no;
-                } elseif ($row->supplier2 == $supplier_id) {
-                    $row->supplier_part_no = $row->supplier2_part_no;
-                } elseif ($row->supplier3 == $supplier_id) {
-                    $row->supplier_part_no = $row->supplier3_part_no;
-                } elseif ($row->supplier4 == $supplier_id) {
-                    $row->supplier_part_no = $row->supplier4_part_no;
-                } elseif ($row->supplier5 == $supplier_id) {
-                    $row->supplier_part_no = $row->supplier5_part_no;
-                }
-                if ($opt->cost != 0) {
-                    $row->cost = $opt->cost;
-                }
-                $row->cost             = $supplier_id ? $this->getSupplierCost($supplier_id, $row) : $row->cost;
-                $row->real_unit_cost   = $row->cost;
-                $row->base_quantity    = 1;
-                $row->base_unit        = $row->unit;
-                $row->base_unit_cost   = $row->cost;
-                $row->unit             = $row->purchase_unit ? $row->purchase_unit : $row->unit;
-                $row->new_entry        = 1;
-                $row->expiry           = '';
-                $row->qty              = 1;
-                $row->quantity_balance = '';
-                $row->discount         = '0';
-                unset($row->details, $row->product_details, $row->price, $row->file, $row->supplier1price, $row->supplier2price, $row->supplier3price, $row->supplier4price, $row->supplier5price, $row->supplier1_part_no, $row->supplier2_part_no, $row->supplier3_part_no, $row->supplier4_part_no, $row->supplier5_part_no);
-                if ($qty) {
-                    $row->qty           = $qty;
-                    $row->base_quantity = $qty;
-                } else {
-                    $row->qty = ($bprice ? $bprice / $row->cost : 1);
-                }
+			$rows = $this->purchases_model->getProductNames($sr);
+			if ($rows) {
+				$r = 0;
+				foreach ($rows as $row) {
+					$c                    = uniqid(mt_rand(), true);
+					$option               = false;
+					$row->item_tax_method = $row->tax_method;
+					$options              = $this->purchases_model->getProductOptions($row->id);
+					if ($options) {
+						$opt = $option_id && $r == 0 ? $this->purchases_model->getProductOptionByID($option_id) : current($options);
+						if (!$option_id || $r > 0) {
+							$option_id = $opt->id;
+						}
+					} else {
+						$opt       = json_decode('{}');
+						$opt->cost = 0;
+						$option_id = false;
+					}
 
-                $units    = $this->site->getUnitsByBUID($row->base_unit);
-                $tax_rate = $this->site->getTaxRateByID($row->tax_rate);
+					$row->option           = $option_id;
+					$row->supplier_part_no = '';
 
-                if ($row->purchase_unit) {
-                    foreach ($units as $unit) {
-                        if ($unit->id == $row->purchase_unit) {
-                            $row->real_unit_cost = $this->site->convertToUnit($unit, $row->cost);
-                        }
-                    }
-                }
+					if ($row->supplier1 == $supplier_id) {
+						$row->supplier_part_no = $row->supplier1_part_no;
+					} elseif ($row->supplier2 == $supplier_id) {
+						$row->supplier_part_no = $row->supplier2_part_no;
+					} elseif ($row->supplier3 == $supplier_id) {
+						$row->supplier_part_no = $row->supplier3_part_no;
+					} elseif ($row->supplier4 == $supplier_id) {
+						$row->supplier_part_no = $row->supplier4_part_no;
+					} elseif ($row->supplier5 == $supplier_id) {
+						$row->supplier_part_no = $row->supplier5_part_no;
+					}
 
-                $pr[] = ['id' => sha1($c . $r), 'item_id' => $row->id, 'label' => $row->name . ' (' . $row->code . ')',
-                    'row'     => $row, 'tax_rate' => $tax_rate, 'units' => $units, 'options' => $options, ];
-                $r++;
-            }
-            $this->sma->send_json($pr);
-        } else {
-            $this->sma->send_json([['id' => 0, 'label' => lang('no_match_found'), 'value' => $term]]);
-        }
-    }
+					if ($opt->cost != 0) {
+						$row->cost = $opt->cost;
+					}
+
+					$row->cost             = $supplier_id ? $this->getSupplierCost($supplier_id, $row) : $row->cost;
+					$row->real_unit_cost   = $row->cost;
+					$row->base_quantity    = 1;
+					$row->base_unit        = $row->unit;
+					$row->base_unit_cost   = $row->cost;
+					$row->unit             = $row->purchase_unit ? $row->purchase_unit : $row->unit;
+					$row->new_entry        = 1;
+					$row->expiry           = '';
+					$row->qty              = 1;
+					$row->quantity_balance = '';
+					$row->discount         = '0';
+					unset(
+						$row->details,
+						$row->product_details,
+						$row->price,
+						$row->file,
+						$row->supplier1price,
+						$row->supplier2price,
+						$row->supplier3price,
+						$row->supplier4price,
+						$row->supplier5price,
+						$row->supplier1_part_no,
+						$row->supplier2_part_no,
+						$row->supplier3_part_no,
+						$row->supplier4_part_no,
+						$row->supplier5_part_no
+					);
+					if ($qty) {
+						$row->qty           = $qty;
+						$row->base_quantity = $qty;
+					} else {
+						$row->qty = ($bprice ? $bprice / $row->cost : 1);
+					}
+
+					$units    = $this->site->getUnitsByBUID($row->base_unit);
+					$tax_rate = $this->site->getTaxRateByID($row->tax_rate);
+
+					if ($row->purchase_unit) {
+						foreach ($units as $unit) {
+							if ($unit->id == $row->purchase_unit) {
+								$row->real_unit_cost = $this->site->convertToUnit($unit, $row->cost);
+							}
+						}
+					}
+					$pr[] = [
+						'id'       => sha1($c . $r),
+						'item_id'  => $row->id,
+						'label'    => $row->name . ' (' . $row->code . ')',
+						'row'      => $row,
+						'tax_rate' => $tax_rate,
+						'units'    => $units,
+						'options'  => $options,
+						'bl_id' 	 => $row->business_location,
+						'bl_name'  => $row->bl_name
+					];
+					$r++;
+				}
+				$this->sma->send_json($pr);
+			} else {
+				$this->sma->send_json([
+					[
+						'id' => 0,
+						'label' => lang('no_match_found'),
+						'value' => $term
+					]
+				]);
+			}
+		}
 
     public function update_status($id)
     {
